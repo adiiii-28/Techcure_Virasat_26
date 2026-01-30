@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { API_ENDPOINTS, apiCall } from "../config/api";
@@ -11,6 +11,28 @@ function ComplaintStatus() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
 
+  const fetchComplaints = useCallback(async () => {
+    try {
+      console.log("Fetching complaints...");
+      const data = await apiCall(API_ENDPOINTS.COMPLAINTS);
+      console.log("All complaints:", data);
+      console.log("Current user:", user);
+      
+      // Filter complaints for current user
+      const userComplaints = data.filter(complaint => 
+        complaint.userId === user.uid || complaint.userEmail === user.email
+      );
+      
+      console.log("User complaints:", userComplaints);
+      setComplaints(userComplaints);
+    } catch (error) {
+      console.error("Error fetching complaints:", error);
+      alert("Error fetching complaints. Please check console for details.");
+    } finally {
+      setLoading(false);
+    }
+  }, [user]);
+
   useEffect(() => {
     console.log("ComplaintStatus mounted, user:", user);
     if (!user) {
@@ -18,31 +40,8 @@ function ComplaintStatus() {
       navigate("/login");
       return;
     }
-    
-    const fetchComplaints = async () => {
-      try {
-        console.log("Fetching complaints...");
-        const data = await apiCall(API_ENDPOINTS.COMPLAINTS);
-        console.log("All complaints:", data);
-        console.log("Current user:", user);
-        
-        // Filter complaints for current user
-        const userComplaints = data.filter(complaint => 
-          complaint.userId === user.uid || complaint.userEmail === user.email
-        );
-        
-        console.log("User complaints:", userComplaints);
-        setComplaints(userComplaints);
-      } catch (error) {
-        console.error("Error fetching complaints:", error);
-        alert("Error fetching complaints. Please check console for details.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchComplaints();
-  }, [user, navigate]);
+  }, [user, navigate, fetchComplaints]);
 
   const filteredComplaints = complaints.filter(complaint => {
     if (filter === "all") return true;
