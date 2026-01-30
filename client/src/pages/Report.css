@@ -1,0 +1,164 @@
+.report-container {
+  height: 90vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  color: white;
+  text-align: center;
+}
+
+/* Card */
+.report-content {
+  width: 420px;
+  padding: 35px;
+  background: rgba(30, 41, 59, 0.8);
+  border-radius: 18px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  transition: 0.3s;
+}
+
+.report-content:hover {
+  transform: translateY(-5px);
+}
+
+/* Title */
+.report-title {
+  font-size: 32px;
+  margin-bottom: 25px;
+  font-weight: bold;
+}
+
+/* Form Layout */
+.report-content form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+/* Labels */
+.report-content label {
+  display: block;
+  text-align: left;
+  margin-top: 18px;
+  margin-bottom: 6px;
+  font-size: 16px;
+  color: #cbd5f5;
+  font-weight: 500;
+}
+
+/* Select + Textarea */
+.report-content select,
+.report-content textarea {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: rgba(15, 23, 42, 0.9);
+  color: white;
+  outline: none;
+  font-size: 15px;
+  transition: 0.3s;
+}
+
+/* Remove white dropdown arrow bg */
+.report-content select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23cbd5f5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 20px;
+  padding-right: 40px;
+}
+
+/* Focus Glow */
+.report-content select:focus,
+.report-content textarea:focus {
+  border: 1px solid #ef4444;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
+}
+
+/* Placeholder */
+.report-content textarea::placeholder {
+  color: #94a3b8;
+}
+
+/* Button */
+.report-content button {
+  margin-top: 20px;
+  padding: 15px;
+  font-size: 18px;
+  font-weight: bold;
+  border: none;
+  border-radius: 40px;
+  background: linear-gradient(45deg, #ef4444, #dc2626);
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.report-content button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px rgba(239, 68, 68, 0.6);
+  background: linear-gradient(45deg, #dc2626, #b91c1c);
+}
+
+.report-content button:active {
+  transform: scale(0.96);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .report-container {
+    padding: 20px;
+    height: auto;
+    min-height: 90vh;
+  }
+  
+  .report-content {
+    width: 100%;
+    max-width: 400px;
+    padding: 25px;
+  }
+  
+  .report-title {
+    font-size: 28px;
+  }
+  
+  .report-content select,
+  .report-content textarea {
+    padding: 12px;
+    font-size: 14px;
+  }
+  
+  .report-content button {
+    padding: 12px;
+    font-size: 16px;
+  }
+}
+
+/* Animation for form elements */
+.report-content form > * {
+  animation: slideInUp 0.5s ease forwards;
+  opacity: 0;
+}
+
+.report-content form > *:nth-child(1) { animation-delay: 0.1s; }
+.report-content form > *:nth-child(2) { animation-delay: 0.2s; }
+.report-content form > *:nth-child(3) { animation-delay: 0.3s; }
+.report-content form > *:nth-child(4) { animation-delay: 0.4s; }
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
