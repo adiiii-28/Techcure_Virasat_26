@@ -1,4 +1,4 @@
-// Vercel deployment trigger
+// Vercel deployment trigger - build fix
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import Navbar from "./components/Navbar";
