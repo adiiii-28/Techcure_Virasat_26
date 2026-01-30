@@ -18,30 +18,31 @@ function ComplaintStatus() {
       navigate("/login");
       return;
     }
+    
+    const fetchComplaints = async () => {
+      try {
+        console.log("Fetching complaints...");
+        const data = await apiCall(API_ENDPOINTS.COMPLAINTS);
+        console.log("All complaints:", data);
+        console.log("Current user:", user);
+        
+        // Filter complaints for current user
+        const userComplaints = data.filter(complaint => 
+          complaint.userId === user.uid || complaint.userEmail === user.email
+        );
+        
+        console.log("User complaints:", userComplaints);
+        setComplaints(userComplaints);
+      } catch (error) {
+        console.error("Error fetching complaints:", error);
+        alert("Error fetching complaints. Please check console for details.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchComplaints();
   }, [user, navigate]);
-
-  const fetchComplaints = async () => {
-    try {
-      console.log("Fetching complaints...");
-      const data = await apiCall(API_ENDPOINTS.COMPLAINTS);
-      console.log("All complaints:", data);
-      console.log("Current user:", user);
-      
-      // Filter complaints for current user
-      const userComplaints = data.filter(complaint => 
-        complaint.userId === user.uid || complaint.userEmail === user.email
-      );
-      
-      console.log("User complaints:", userComplaints);
-      setComplaints(userComplaints);
-    } catch (error) {
-      console.error("Error fetching complaints:", error);
-      alert("Error fetching complaints. Please check console for details.");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const filteredComplaints = complaints.filter(complaint => {
     if (filter === "all") return true;
