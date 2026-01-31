@@ -13,6 +13,7 @@ import Signup from "./pages/Signup";
 import Profile from "./pages/Profile";
 import ComplaintStatus from "./pages/ComplaintStatus";
 import TestComplaint from "./pages/TestComplaint";
+import AdminComplaints from "./pages/AdminComplaints";
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/complaint-status" element={<ComplaintStatus />} />
           <Route path="/test-complaint" element={<TestComplaint />} />
+          <Route path="/admin-complaints" element={<AdminComplaints />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
