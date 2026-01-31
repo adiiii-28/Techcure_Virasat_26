@@ -78,6 +78,17 @@ app.get("/health", (req, res) => {
   });
 });
 
+// Data viewer endpoint - see all submitted data
+app.get("/data", (req, res) => {
+  res.json({
+    timestamp: new Date().toISOString(),
+    total_reports: reports.length,
+    total_complaints: complaints.length,
+    reports: reports,
+    complaints: complaints
+  });
+});
+
 const PORT = process.env.PORT || 5000;
 
 // server start
