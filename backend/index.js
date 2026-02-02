@@ -21,11 +21,15 @@ app.get("/", (req, res) => {
   res.json({ 
     message: "Suraksha Setu Backend API",
     version: "1.0.0",
+    database: "MongoDB",
+    environment: process.env.NODE_ENV || 'development',
     endpoints: {
       reports: "/reports",
       complaints: "/complaints",
       submitReport: "/report",
-      submitComplaint: "/complaint"
+      submitComplaint: "/complaint",
+      health: "/health",
+      data: "/data"
     }
   });
 });
@@ -125,7 +129,8 @@ app.get("/health", async (req, res) => {
       timestamp: new Date().toISOString(),
       reports: reportCount,
       complaints: complaintCount,
-      database: "MongoDB"
+      database: "MongoDB",
+      environment: process.env.NODE_ENV || 'development'
     });
   } catch (error) {
     res.json({ 
@@ -133,7 +138,8 @@ app.get("/health", async (req, res) => {
       timestamp: new Date().toISOString(),
       reports: 0,
       complaints: 0,
-      database: "MongoDB (connection error)"
+      database: "MongoDB (connection error)",
+      environment: process.env.NODE_ENV || 'development'
     });
   }
 });
@@ -149,6 +155,7 @@ app.get("/data", async (req, res) => {
       total_reports: reports.length,
       total_complaints: complaints.length,
       database: "MongoDB",
+      environment: process.env.NODE_ENV || 'development',
       reports: reports,
       complaints: complaints
     });
@@ -157,10 +164,14 @@ app.get("/data", async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 5000;
+// Export for Vercel serverless
+module.exports = app;
 
-// server start
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-});
+// For local development
+const PORT = process.env.PORT || 5000;
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+    console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  });
+}
