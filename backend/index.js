@@ -1,12 +1,16 @@
 const express = require("express");
 const cors = require("cors");
+require('dotenv').config();
+const connectDB = require('./config/db');
+
+// Connect to MongoDB
+connectDB();
 
 const app = express();
 
-// Store reports and complaints in memory (for demo purposes)
-// In production, you should use a database like MongoDB or PostgreSQL
-let reports = [];
-let complaints = [];
+// Import models
+const Report = require('./models/Report');
+const Complaint = require('./models/Complaint');
 
 // middleware
 app.use(cors());
@@ -27,66 +31,130 @@ app.get("/", (req, res) => {
 });
 
 // Get all reports
-app.get("/reports", (req, res) => {
-  res.json(reports);
+app.get("/reports", async (req, res) => {
+  try {
+    const reports = await Report.find().sort({ timestamp: -1 });
+    res.json(reports);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch reports" });
+  }
 });
 
 // Get all complaints
-app.get("/complaints", (req, res) => {
-  res.json(complaints);
+app.get("/complaints", async (req, res) => {
+  try {
+    const complaints = await Complaint.find().sort({ timestamp: -1 });
+    res.json(complaints);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch complaints" });
+  }
 });
 
 // report route
-app.post("/report", (req, res) => {
-  console.log("Report received:", req.body);
+app.post("/report", async (req, res) => {
+  try {
+    console.log("Report received:", req.body);
 
-  // Store the report
-  reports.push({
-    ...req.body,
-    id: Date.now(),
-    timestamp: req.body.timestamp || new Date().toISOString()
-  });
+    // Create new report in MongoDB
+    const newReport = new Report({
+      name: req.body.name,
+      email: req.body.email,
+      phone: req.body.phone,
+      incident: req.body.incident,
+      location: req.body.location,
+      description: req.body.description
+    });
 
-  console.log("Total reports:", reports.length);
+    const savedReport = await newReport.save();
+    console.log("Report saved to MongoDB:", savedReport);
 
-  res.json({ success: true, message: "Report saved" });
+    res.json({ 
+      success: true, 
+      message: "Report submitted successfully!",
+      reportId: savedReport._id
+    });
+  } catch (error) {
+    console.error("Error saving report:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Failed to submit report" 
+    });
+  }
 });
 
 // complaint route
-app.post("/complaint", (req, res) => {
-  console.log("Complaint received:", req.body);
+app.post("/complaint", async (req, res) => {
+  try {
+    console.log("Complaint received:", req.body);
 
-  // Store the complaint
-  complaints.push({
-    ...req.body,
-    id: Date.now(),
-    timestamp: req.body.timestamp || new Date().toISOString()
-  });
+    // Create new complaint in MongoDB
+    const newComplaint = new Complaint({
+      name: req.body.name,
+      email: req.body.email,
+      phone: req.body.phone,
+      complaint: req.body.complaint,
+      location: req.body.location,
+      userId: req.body.userId
+    });
 
-  console.log("Total complaints:", complaints.length);
+    const savedComplaint = await newComplaint.save();
+    console.log("Complaint saved to MongoDB:", savedComplaint);
 
-  res.json({ success: true, message: "Complaint submitted successfully" });
+    res.json({ 
+      success: true, 
+      message: "Complaint submitted successfully!",
+      complaintId: savedComplaint._id
+    });
+  } catch (error) {
+    console.error("Error saving complaint:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Failed to submit complaint" 
+    });
+  }
 });
 
 // Health check endpoint
-app.get("/health", (req, res) => {
-  res.json({ 
-    status: "healthy", 
-    timestamp: new Date().toISOString(),
-    reports: reports.length,
-    complaints: complaints.length
-  });
+app.get("/health", async (req, res) => {
+  try {
+    const reportCount = await Report.countDocuments();
+    const complaintCount = await Complaint.countDocuments();
+    
+    res.json({ 
+      status: "healthy", 
+      timestamp: new Date().toISOString(),
+      reports: reportCount,
+      complaints: complaintCount,
+      database: "MongoDB"
+    });
+  } catch (error) {
+    res.json({ 
+      status: "healthy", 
+      timestamp: new Date().toISOString(),
+      reports: 0,
+      complaints: 0,
+      database: "MongoDB (connection error)"
+    });
+  }
 });
 
 // Data viewer endpoint - see all submitted data
-app.get("/data", (req, res) => {
-  res.json({
-    timestamp: new Date().toISOString(),
-    total_reports: reports.length,
-    total_complaints: complaints.length,
-    reports: reports,
-    complaints: complaints
-  });
+app.get("/data", async (req, res) => {
+  try {
+    const reports = await Report.find().sort({ timestamp: -1 });
+    const complaints = await Complaint.find().sort({ timestamp: -1 });
+    
+    res.json({
+      timestamp: new Date().toISOString(),
+      total_reports: reports.length,
+      total_complaints: complaints.length,
+      database: "MongoDB",
+      reports: reports,
+      complaints: complaints
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch data from MongoDB" });
+  }
 });
 
 const PORT = process.env.PORT || 5000;
